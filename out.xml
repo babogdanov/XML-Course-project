@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vendors>
+  <vendor id="1" name="Ivan Ivanov" phone="081258155">
+    <product id="1" name="TV" price="155" />
+    <product id="2" name="PC" price="1550" />
+  </vendor>
+  <vendor id="2" name="Georgi Ivanov" phone="086235268155">
+    <product id="3" name="Tomatoes" price="5" />
+  </vendor>
+</vendors>

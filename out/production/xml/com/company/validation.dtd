@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <!ELEMENT vendors (vendor+)>
+        <!ELEMENT vendor (product+)>
+        <!ELEMENT product EMPTY>
+        <!ATTLIST vendor id CDATA #REQUIRED>
+        <!ATTLIST vendor name CDATA #REQUIRED>
+        <!ATTLIST vendor phone CDATA #REQUIRED>
+        <!ATTLIST product id CDATA #REQUIRED>
+        <!ATTLIST product name CDATA #REQUIRED>
+        <!ATTLIST product price CDATA #REQUIRED>
