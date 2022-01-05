@@ -7,7 +7,6 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,27 +14,25 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) throws IOException, JDOMException {
-        while(true){
-            System.out.print("Enter 1 to parse the db entries to out.xml, or 2 to do the opposite: ");
+        while (true) {
+            System.out.print("Enter 1 to parse the db entries to out.xml, 2 to do the opposite, or 3 to exit: ");
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
 
             if (choice == 1) {
                 dbToXml();
-            } else if (choice == 2){
+            } else if (choice == 2) {
                 xmlToDb();
+            } else if (choice == 3) {
+                break;
             } else {
                 System.out.println("Enter 1 or 2, please.");
             }
         }
-
-        // dbToXml();
-        // xmlToDb();
     }
 
     static void dbToXml() throws IOException {
@@ -59,10 +56,9 @@ public class Main {
                             "FROM (vendors v LEFT JOIN products p ON v.id=p.vendor_id)"
             );
 
-            System.out.println(queryResult);
-
             while (queryResult.next()) {
                 final int vendorId = queryResult.getInt("v_id");
+
                 if (data.stream().noneMatch(x -> x.vendorId == vendorId)) {
                     data.add(new VendorModel(queryResult.getInt("v_id"),
                             queryResult.getString("v_name"),
@@ -70,6 +66,7 @@ public class Main {
                 }
 
                 int dataIndex = -1;
+
                 for (int i = 0; i < data.size(); i++) {
                     if (data.get(i).vendorId == vendorId) {
                         dataIndex = i;
@@ -81,13 +78,9 @@ public class Main {
                         queryResult.getString("p_name"),
                         queryResult.getInt("p_price")));
             }
+
         } catch (Exception e) {
             e.printStackTrace(System.out);
-        }
-
-        for (VendorModel vendorModel : data) {
-            System.out.println(vendorModel.vendorId + " " + vendorModel.vendorName + " " + vendorModel.vendorPhone
-                    + " " + vendorModel.productModels.stream().map(x -> x.productName).collect(Collectors.toList()));
         }
 
         Element root = new Element("vendors");
@@ -111,7 +104,8 @@ public class Main {
         //Create the XML
         XMLOutputter outputter = new XMLOutputter();
         outputter.setFormat(Format.getPrettyFormat());
-        outputter.output(doc, new FileWriter(new File("out.xml")));
+        outputter.output(doc, new FileWriter("out.xml"));
+        System.out.println("Success!");
     }
 
     static void xmlToDb() throws IOException, JDOMException {
@@ -135,10 +129,6 @@ public class Main {
             data.add(vendorModel);
         }
 
-        for(VendorModel vendorModel: data){
-            System.out.println(vendorModel);
-        }
-
         Connection con;
         PreparedStatement vendorStmt, productStmt;
         ResultSet queryResult;
@@ -159,12 +149,12 @@ public class Main {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
             vendorStmt = con.prepareStatement(vendorQuery);
             productStmt = con.prepareStatement(productQuery);
-            for(VendorModel vendorModel: data){
+            for (VendorModel vendorModel : data) {
                 vendorStmt.setInt(1, vendorModel.getVendorId());
                 vendorStmt.setString(2, vendorModel.getVendorName());
                 vendorStmt.setString(3, vendorModel.getVendorPhone());
                 vendorStmt.addBatch();
-                for(ProductModel productModel: vendorModel.getProductModels()){
+                for (ProductModel productModel : vendorModel.getProductModels()) {
                     productStmt.setInt(1, productModel.getProductId());
                     productStmt.setString(2, productModel.getProductName());
                     productStmt.setInt(3, productModel.getProductPrice());
@@ -176,9 +166,9 @@ public class Main {
             vendorStmt.executeBatch();
             productStmt.executeBatch();
 
+            System.out.println("Success!");
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
-
     }
 }

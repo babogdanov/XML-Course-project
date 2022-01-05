@@ -6,5 +6,6 @@
   </vendor>
   <vendor id="2" name="Georgi Ivanov" phone="086235268155">
     <product id="3" name="Tomatoes" price="5" />
+    <product id="4" name="DVD" price="400" />
   </vendor>
 </vendors>
